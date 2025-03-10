@@ -1,108 +1,71 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 
-# ฟังก์ชันการคำนวณ RER, MER, MAX_energy
 def calculate():
     try:
-        # รับน้ำหนักจากผู้ใช้
-        weigh = float(weight_entry.get())
-        RER = 70 * weigh ** 0.75
-        RER_label.config(text=f"RER: {RER:.2f} kcal 🐾")
-
-        # เลือกประเภทของสัตว์
-        animal_type = animal_choice.get()
-        if animal_type == 1:
-            factor = 2.0
-        elif animal_type == 2:
-            factor = 1.5
-        elif animal_type == 3:
-            factor = 1.7
-        elif animal_type == 4:
-            factor = 1.5
-        elif animal_type == 5:
-            factor = 2.0
-        elif animal_type == 6:
-            factor = 5.0
-        elif animal_type == 7:
-            factor = 1.0
-        elif animal_type == 8:
-            factor = 3.0
-        else:
-            factor = 1.0
-
+        weight = float(entry_weight.get())
+        RER = 70 * weight ** 0.75
+        animal_type = combo_animal.get()
+        food_brand = combo_food.get()
+        
+        factor = factors.get(animal_type, 1.0)
         MER = RER * factor
-        MER_label.config(text=f"MER: {MER:.2f} kcal/day 🐕")
-
-        # เลือกยี่ห้อของผลิตภัณฑ์
-        food_brand = food_choice.get()
-        if food_brand == 1:
-            brand_factor = 1.7
-        elif food_brand == 2:
-            brand_factor = 3.2
-        else:
-            brand_factor = 1.0
-
-        MAX_energy = MER / brand_factor
-        MAX_energy_label.config(text=f"MAX Energy: {MAX_energy:.2f} g/day 🍽️")
-
+        kcal_per_g = food_energy_per_gram.get(food_brand, 3.5)
+        food_amount = MER / kcal_per_g
+        
+        result_label.config(text=f"🌟 ผลลัพธ์ 🌟\n🐶 RER: {RER:.2f} kcal\n🐱 MER: {MER:.2f} kcal/day\n🥣 อาหารที่ต้องกิน: {food_amount:.2f} g/day 🍗")
     except ValueError:
-        messagebox.showerror("Error", "กรุณาป้อนข้อมูลให้ถูกต้อง 😞")
+        messagebox.showerror("ข้อผิดพลาด", "กรุณาป้อนน้ำหนักให้ถูกต้อง")
 
-# สร้างหน้าต่างหลัก
 root = tk.Tk()
-root.title("การคำนวณพลังงานสำหรับสัตว์เลี้ยง 🐾")
-root.geometry("400x600")
-root.config(bg="#F4C2C2")
+root.title("คำนวณปริมาณอาหารสำหรับสัตว์เลี้ยง 🐾")
+root.geometry("400x500")
+root.configure(bg="#FFF5E1")
 
-# ข้อความแนะนำ
-label = tk.Label(root, text="กรุณาป้อนน้ำหนัก (กิโลกรัม) 🐱:", font=("Arial", 14), bg="#F4C2C2", fg="#1E90FF")
-label.pack(pady=10)
+style = ttk.Style()
+style.configure("TLabel", foreground="#FF69B4", background="#FFF5E1", font=("Arial", 12))
+style.configure("TButton", font=("Arial", 12))
+style.configure("TCombobox", background="#FFD1DC", foreground="black", font=("Arial", 12))
 
-# ช่องกรอกน้ำหนัก
-weight_entry = tk.Entry(root, font=("Arial", 14))
-weight_entry.pack(pady=10)
+factors = {
+    "ลูกสัตว์อายุน้อยกว่า 4 เดือน 🐾": 2.0,
+    "ลูกสัตว์อายุ 4-6 เดือน 🐾": 1.5,
+    "สัตว์โตเต็มวัย (ทำหมันแล้ว) 🐾": 1.7,
+    "สัตว์โตเต็มวัย (ยังไม่ทำหมัน) 🐾": 1.5,
+    "สัตว์ใช้แรงงานปานกลาง ⚖️": 2.0,
+    "สัตว์ใช้แรงงานมาก ⚖️": 5.0,
+    "สัตว์ต้องการลดน้ำหนัก 🏃": 1.0,
+    "สัตว์ตั้งครรภ์/แม่ลูกอ่อน ✨": 3.0
+}
 
-# ส่วนเลือกประเภทของสัตว์
-animal_label = tk.Label(root, text="กรุณาเลือกประเภทของสัตว์ 🐶:", font=("Arial", 14), bg="#F4C2C2", fg="#FF69B4")
-animal_label.pack(pady=10)
+food_energy_per_gram = {
+    "Smartheart ⭐": 3.5,
+    "Pedigree 🐾": 3.2
+}
 
-animal_choice = tk.IntVar()
-animal_options = [
-    "ลูกสัตว์อายุน้อยกว่า 4 เดือน 🍼", 
-    "ลูกสัตว์อายุ 4-6 เดือน 🐾", 
-    "สัตว์โตเต็มวัย (ทำหมันเเล้ว) 🐕", 
-    "สัตว์โตเต็มวัย (ยังไม่ทำหมัน) 🐈", 
-    "สัตว์ใช้เเรงงานปานกลาง 💪", 
-    "สัตว์ใช้เเรงงานมาก 🔥", 
-    "สัตว์ต้องการลดน้ำหนัก 🐾", 
-    "สัตว์ตั้งครรภ์/แม่ลูกอ่อน 🤰"
-]
+label_weight = ttk.Label(root, text="🐾 น้ำหนักสัตว์เลี้ยง (กก.)")
+label_weight.pack(pady=5)
+entry_weight = ttk.Entry(root)
+entry_weight.pack(pady=5)
 
-for i, option in enumerate(animal_options):
-    tk.Radiobutton(root, text=option, variable=animal_choice, value=i+1, font=("Arial", 12), bg="#F4C2C2", fg="#FF69B4").pack()
+label_animal = ttk.Label(root, text="🐾 ประเภทของสัตว์")
+label_animal.pack(pady=5)
+combo_animal = ttk.Combobox(root, values=list(factors.keys()), state="readonly")
+combo_animal.pack(pady=5)
 
-# ส่วนเลือกยี่ห้อของผลิตภัณฑ์
-food_label = tk.Label(root, text="กรุณาเลือกยี่ห้อของผลิตภัณฑ์ 🍲:", font=("Arial", 14), bg="#F4C2C2", fg="#1E90FF")
-food_label.pack(pady=10)
+label_food = ttk.Label(root, text="🍲 ยี่ห้ออาหาร")
+label_food.pack(pady=5)
+combo_food = ttk.Combobox(root, values=list(food_energy_per_gram.keys()), state="readonly")
+combo_food.pack(pady=5)
 
-food_choice = tk.IntVar()
-food_options = ["Smartheart 🐾", "Pedigree 🐶"]
-for i, option in enumerate(food_options):
-    tk.Radiobutton(root, text=option, variable=food_choice, value=i+1, font=("Arial", 12), bg="#F4C2C2", fg="#1E90FF").pack()
+button_calculate = ttk.Button(root, text="⚖️ คำนวณ", command=calculate)
+button_calculate.pack(pady=10)
 
-# ปุ่มคำนวณ
-calculate_button = tk.Button(root, text="คำนวณ ✨", font=("Arial", 14), bg="#FF69B4", fg="white", command=calculate)
-calculate_button.pack(pady=20)
+result_label = ttk.Label(root, text="", font=("Arial", 12, "bold"))
+result_label.pack(pady=10)
 
-# แสดงผลลัพธ์
-RER_label = tk.Label(root, text="RER: 0 kcal", font=("Arial", 14), bg="#F4C2C2", fg="#1E90FF")
-RER_label.pack(pady=10)
-
-MER_label = tk.Label(root, text="MER: 0 kcal/day", font=("Arial", 14), bg="#F4C2C2", fg="#FF69B4")
-MER_label.pack(pady=10)
-
-MAX_energy_label = tk.Label(root, text="MAX Energy: 0 g/day", font=("Arial", 14), bg="#F4C2C2", fg="#1E90FF")
-MAX_energy_label.pack(pady=10)
-
-# เริ่มต้น UI
 root.mainloop()
+
+
+
+
