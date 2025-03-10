@@ -33,8 +33,8 @@ elif choose_number == 8:
 else:
     factor = 1.0
 
-DER = RER*factor
-print("DER", "{:.2f}".format(DER), "kcal/day")
+MER = RER*factor
+print("MER", "{:.2f}".format(MER), "kcal/day")
 print("\nกรุณาเลือกยี่ห่อของผลิตภัณฑ์:")
 
 
@@ -48,4 +48,4 @@ elif choose_number == 2:
     factor = 3.2
 
 MAX_energy  =MER/Choose_food_brand
-print(" MAX_energy", "{:.2f}".format(MAX_energy), "g/day") 
+print(" MAX_energy", "{:.2f}".format(MAX_energy), "g/day")
